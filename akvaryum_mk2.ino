@@ -4,10 +4,7 @@
 #include "secrets.h"
 #include "ThingSpeak.h"
 
-const int B222 = 35; //its degres buttons  set auto temp to 22.2
-const int B22 = 34; //its degres buttons  set auto temp to 22.0
-const int B128 = 39; //its degres buttons  set auto temp to -128 (maunel on the fan)
-float ButtonSev = 22.5; //its degres buttons  set auto temp to  22.5 (stock degree)
+bool Sleepy = false;
 
 #define sleepTime 12e7 // (120,000,000 micro seconts = 2minute)
 
@@ -27,9 +24,6 @@ const char* myWriteAPIKey = SECRET_WRITE_APIKEY;
 
 void setup() {
   pinMode(LED,OUTPUT);
-  pinMode(B22,INPUT);
-  pinMode(B222,INPUT);
-  pinMode(B128,INPUT);
   Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   ThingSpeak.begin(client);
@@ -65,7 +59,7 @@ void wifi() {
     delay(200);               
     Serial.print(".");
 
-    if (millis() - startTime > 8000) {  // 8 seconds to restart
+    if (millis() - startTime > 8000) {  // 8 seconds to restart (fuse)
       Serial.println("\nConnotConnected");
       ESP.restart();
     }
@@ -76,43 +70,24 @@ void wifi() {
 }
 
 
-void Butons() {
-  ButtonSev = 22.5;
-
-  int buttonState1 = digitalRead(B22);
-  if (buttonState1 == HIGH) {
-    ButtonSev = 22.0;
-  }
-
-  int buttonState2 = digitalRead(B222);
-  if (buttonState2 == HIGH) {
-    ButtonSev = 22.2;
-  }
-
-  int buttonState3 = digitalRead(B128);
-  if (buttonState3 == HIGH) {
-    ButtonSev = -128.0;
-  }
-
-}
-
 void loop() {
   if (WiFi.status() != WL_CONNECTED) {
     wifi();
   }
   
-  Butons();
-
+  
   digitalWrite(LED,HIGH);
   sensors.requestTemperatures();
   float temperature = sensors.getTempC(insideThermometer);
 
-  if (temperature >= ButtonSev) {
+  if (temperature >= 22.5) {
     digitalWrite(relay, HIGH);
     ThingSpeak.setField(3, 1);
+    Sleepy = false;
   } else {
       digitalWrite(relay, LOW);
       ThingSpeak.setField(3, 0);
+      Sleepy = true;
   }
 
   if (temperature == -127) { //ESP sensonrs fuse
@@ -126,6 +101,11 @@ void loop() {
     ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
 
   digitalWrite(LED,LOW);
+
+  if (Sleepy == false) {
+    delay(120000);
+  } else {
   esp_sleep_enable_timer_wakeup(sleepTime);
   esp_deep_sleep_start();
+  }
 }
