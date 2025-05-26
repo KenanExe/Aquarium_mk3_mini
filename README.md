@@ -2,6 +2,8 @@
 
 This project uses an **ESP32** to automatically control a **fan based on temperature**, and periodically sends sensor data to **ThingSpeak**. It utilizes a **Dallas DS18B20 temperature sensor**, a **relay module**, and **Wi-Fi** for data transmission.
 
+![Başlıksız](https://github.com/user-attachments/assets/707cb132-148b-4c97-aeff-bf70f1857f05)
+
 ## Features
 
 * **Automatic fan control**:
@@ -24,8 +26,6 @@ This project uses an **ESP32** to automatically control a **fan based on tempera
 * Fan
 * Wi-Fi connection
   
-![Başlıksız](https://github.com/user-attachments/assets/707cb132-148b-4c97-aeff-bf70f1857f05)
-
 ## Notes
 
 * If the sensor fails to respond (returns -127°C), the ESP32 will automatically reboot.
