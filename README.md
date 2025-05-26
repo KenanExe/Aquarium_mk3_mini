@@ -1,4 +1,4 @@
-# Temperature-Controlled Fan System (ESP32 + ThingSpeak)
+# Smart Aquarium Temperature Control System (ESP32 + ThingSpeak)
 
 This project uses an **ESP32** to automatically control a **fan based on temperature**, and periodically sends sensor data to **ThingSpeak**. It utilizes a **Dallas DS18B20 temperature sensor**, a **relay module**, and **Wi-Fi** for data transmission.
 
